@@ -35,6 +35,7 @@ typedef struct __object__ {
 	double  dou;	
 	int32_t z32;
 	int64_t z64;
+	time_t  time;
 } object_t;
 
 void binarydump(unsigned char * buffer, int size)
@@ -78,19 +79,10 @@ void hexdump(unsigned char * buffer, int size)
 	}
 }
 
-void test_hibuf_with_buffer()
-{
-	int n = 0, byte_size = 0, size = 0;
-	char * buffer = NULL;
-	object_t * obj_ptr = NULL;
-	elem_t   * elem_ptr = NULL;
 
-	static hibuf_meta_t meta_object_t, 
-		meta_elem_t;
-
-	//define struct
-	elem_t array[2] = {{1, 0x00FF, 0x0000FFFF, 0x00000000FFFFFFFF, "123"}, {0xFF, 0xFFFF, 0xFFFFFFFF, 0xFFFFFFFFFFFFFFFF, "1234"}};
-	object_t object = {
+//define struct
+static elem_t array[2] = {{1, 0x00FF, 0x0000FFFF, 0x00000000FFFFFFFF, "123"}, {0xFF, 0xFFFF, 0xFFFFFFFF, 0xFFFFFFFFFFFFFFFF, "1234"}};
+static object_t object = {
 		.u8 = 1, 
 		.u16 = 2, 
 		.u32 = 3, 
@@ -99,6 +91,7 @@ void test_hibuf_with_buffer()
 		.dou = 1234567890.1234567,//17 number
 		.z32 = -1,
 		.z64 = -2147483647,
+		.time = 123456790,
 		.object = {
 			.s8 = 5,
 			.s16 = 6,
@@ -111,6 +104,9 @@ void test_hibuf_with_buffer()
 		}
 	};
 
+static hibuf_meta_t meta_object_t, meta_elem_t;
+void init()
+{
 	//setup hibuf meta
 	HIBUF_MAPPING(meta_elem_t, elem_t,
 		HIBUF_FIELD_S8(7, s8),
@@ -130,7 +126,16 @@ void test_hibuf_with_buffer()
 		HIBUF_FIELD_DOUBLE(8, dou),
 		HIBUF_FIELD_Z32(9, z32),
 		HIBUF_FIELD_Z64(10, z64),
+		HIBUF_FIELD_TIME(11, time),
 	);	
+}
+	//get buffer length of encode
+void test_hibuf_with_buffer()
+{
+	int n = 0, byte_size = 0, size = 0;
+	char * buffer = NULL;
+	object_t * obj_ptr = NULL;
+	elem_t   * elem_ptr = NULL;
 
 	//get buffer length of encode
 	byte_size = hibuf_byte_length(&meta_object_t, &object);
@@ -161,9 +166,10 @@ void test_hibuf_with_buffer()
 
 	//printf result after decode
 	printf("object attribute: u8 %02X, u16 %02X, u32 %02X, u64 %02X, "
-		"fl %f, double %lf, z32 %d, z64 %d\n", 
+		"fl %f, double %lf, z32 %d, z64 %d, time %ld\n", 
 		obj_ptr->u8, obj_ptr->u16, obj_ptr->u32, obj_ptr->u64, 
-		obj_ptr->fl, obj_ptr->dou, obj_ptr->z32, obj_ptr->z64);
+		obj_ptr->fl, obj_ptr->dou, obj_ptr->z32, obj_ptr->z64,
+		obj_ptr->time);
 	printf("object array    : count %d\n", obj_ptr->array.count);
 	for ( n=0, elem_ptr = obj_ptr->array.data; 
 		n<obj_ptr->array.count; ++n, ++elem_ptr) {
@@ -188,53 +194,6 @@ void test_hibuf()
 	object_t * obj_ptr = NULL;
 	elem_t   * elem_ptr = NULL;
 
-	static hibuf_meta_t meta_object_t, 
-		meta_elem_t;
-
-	//define struct
-	elem_t array[2] = {{1, 0x00FF, 0x0000FFFF, 0x00000000FFFFFFFF, "123"}, {0xFF, 0xFFFF, 0xFFFFFFFF, 0xFFFFFFFFFFFFFFFF, "1234"}};
-	object_t object = {
-		.u8 = 1, 
-		.u16 = 2, 
-		.u32 = 3, 
-		.u64 = 4, 
-		.fl = 1.1234567,//5-6 number
-		.dou = 1234567890.1234567,//17 number
-		.z32 = -1,
-		.z64 = -2147483647,
-		.object = {
-			.s8 = 5,
-			.s16 = 6,
-			.s32 = 7,
-			.s64 = 8,
-		},
-		.array = {
-			.count = sizeof(array)/sizeof(array[0]),
-			.data  = array,
-		}
-	};
-
-	//setup hibuf meta
-	HIBUF_MAPPING(meta_elem_t, elem_t,
-		HIBUF_FIELD_S8(7, s8),
-		HIBUF_FIELD_S16(8, s16),
-		HIBUF_FIELD_S32(9, s32),
-		HIBUF_FIELD_S64(10, s64),
-		HIBUF_FIELD_STRING(11,str),
-	);
-	HIBUF_MAPPING(meta_object_t, object_t,
-		HIBUF_FIELD_U8(1, u8),
-		HIBUF_FIELD_U16(2, u16),
-		HIBUF_FIELD_U32(3, u32),
-		HIBUF_FIELD_U64(4, u64),
-		//HIBUF_FIELD_OBJECT(5, object, &meta_elem_t),
-		HIBUF_FIELD_ARRAY(6, array, &meta_elem_t),
-		HIBUF_FIELD_FLOAT(7, fl),
-		HIBUF_FIELD_DOUBLE(8, dou),
-		HIBUF_FIELD_Z32(9, z32),
-		HIBUF_FIELD_Z64(10, z64),
-	);	
-
 	//encode data
 	printf("##ENCODE DATA:");
 	size = hibuf_byte_encode(&meta_object_t, &object, &buffer);	
@@ -256,9 +215,10 @@ void test_hibuf()
 
 	//printf result after decode
 	printf("object attribute: u8 %02X, u16 %02X, u32 %02X, u64 %02X, "
-		"fl %f, double %lf, z32 %d, z64 %d\n", 
+		"fl %f, double %lf, z32 %d, z64 %d, time %ld\n", 
 		obj_ptr->u8, obj_ptr->u16, obj_ptr->u32, obj_ptr->u64, 
-		obj_ptr->fl, obj_ptr->dou, obj_ptr->z32, obj_ptr->z64);
+		obj_ptr->fl, obj_ptr->dou, obj_ptr->z32, obj_ptr->z64,
+		obj_ptr->time);
 	printf("object array    : count %d\n", obj_ptr->array.count);
 	for ( n=0, elem_ptr = obj_ptr->array.data; 
 		n<obj_ptr->array.count; ++n, ++elem_ptr) {
@@ -278,6 +238,7 @@ LABEL_FREE:
 
 int main()
 {
+	init();
 	test_hibuf();
 	//test_hibuf_with_buffer();
 	return 0;	

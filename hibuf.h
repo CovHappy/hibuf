@@ -74,6 +74,7 @@ typedef struct __hibuf_opt__ hibuf_opt_t;
 #define HIBUF_TYPE_Z32_SIZE HIBUF_TYPE_S32_SIZE
 #define HIBUF_TYPE_Z64_SIZE HIBUF_TYPE_S64_SIZE
 
+#define HIBUF_TYPE_TIME_SIZE sizeof(time_t)
 #define HIBUF_TYPE_FLOAT_SIZE sizeof(float)
 #define HIBUF_TYPE_DOUBLE_SIZE sizeof(double)
 
@@ -101,6 +102,8 @@ typedef enum {
 
 	HIBUF_TYPE_FLOAT,
 	HIBUF_TYPE_DOUBLE,
+
+	HIBUF_TYPE_TIME,
 
 	HIBUF_TYPE_STRING,
 	HIBUF_TYPE_OBJECT,
@@ -177,6 +180,7 @@ extern const hibuf_opt_t HIBUF_OPT_Z32;
 extern const hibuf_opt_t HIBUF_OPT_Z64;
 extern const hibuf_opt_t HIBUF_OPT_FLOAT;
 extern const hibuf_opt_t HIBUF_OPT_DOUBLE;
+extern const hibuf_opt_t HIBUF_OPT_TIME;
 extern const hibuf_opt_t HIBUF_OPT_STRING;
 extern const hibuf_opt_t HIBUF_OPT_ARRAY;
 extern const hibuf_opt_t HIBUF_OPT_OBJECT;
@@ -193,6 +197,7 @@ extern const hibuf_opt_t HIBUF_OPT_OBJECT;
 #define HIBUF_FIELD_S64(I,N)  	  HIBUF_FIELD(S64,I,N,NULL)
 #define HIBUF_FIELD_Z32(I,N)  	  HIBUF_FIELD(Z32,I,N,NULL)
 #define HIBUF_FIELD_Z64(I,N)  	  HIBUF_FIELD(Z64,I,N,NULL)
+#define HIBUF_FIELD_TIME(I,N)  	  HIBUF_FIELD(TIME,I,N,NULL)
 #define HIBUF_FIELD_FLOAT(I,N)    HIBUF_FIELD(FLOAT,I,N,NULL)
 #define HIBUF_FIELD_DOUBLE(I,N)   HIBUF_FIELD(DOUBLE,I,N,NULL)
 #define HIBUF_FIELD_STRING(I,N)   HIBUF_FIELD(STRING,I,N,NULL)
