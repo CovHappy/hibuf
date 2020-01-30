@@ -7,7 +7,7 @@ Provide happy api for TLV in C
 # run
     ./test.out
     
-# usage api
+# usage
 
 **1. Mapping Objec to Meta**
 
@@ -51,3 +51,14 @@ Provide happy api for TLV in C
     extern int    hibuf_decode(const hibuf_meta_t * meta, char *bytes, size_t size, void **object);
     extern void   hibuf_free(const hibuf_meta_t * meta, void *object);
 ```  
+
+
+# compressible format
+
+```
+TLV = {TYPE=2byte, LENGTH=2byte, VALUE=data}
+
+hex dump:
+00 01 00 01 01 00 02 00 01 02 00 03 00 01 03 //{00 01[T], 00 01[L], 01[V]}; { 00 02[T], 00 01[L], 02[V]}; { 00 03[T], 00 01[L], 03[V]};
+00 04 00 01 04 ...                           //{00 04[T], 00 01[L] 04[V]};
+```
