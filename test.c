@@ -41,6 +41,11 @@ void binarydump(unsigned char * buffer, int size)
 {
 	int n, m;
 	uint8_t bits;
+
+	if ( NULL == buffer || 0 == size ) {
+		return;
+	}
+
 	printf("[");
 	for( n=size-1; n>=0; --n ) {
 		bits = buffer[n];
@@ -59,6 +64,10 @@ void binarydump(unsigned char * buffer, int size)
 void hexdump(unsigned char * buffer, int size)
 {
 	int n;
+	if ( NULL == buffer || 0 == size ) {
+		return;
+	}
+
 	for (n=0; n<size; ++n) {
 		//tail \n
 		if ( (n+1)%16 == 0 ) putchar('\n');
@@ -69,7 +78,7 @@ void hexdump(unsigned char * buffer, int size)
 	}
 }
 
-void test_hibuf()
+void test_hibuf_with_buffer()
 {
 	int n = 0, byte_size = 0, size = 0;
 	char * buffer = NULL;
@@ -164,13 +173,113 @@ void test_hibuf()
 			elem_ptr->str, strlen(elem_ptr->str));
 	}
 	
+	//free object
+	hibuf_free(&meta_object_t, obj_ptr);
+
 LABEL_FREE:
 	//free space
 	free(buffer);
 }
 
+void test_hibuf()
+{
+	int n = 0, byte_size = 0, size = 0;
+	char * buffer = NULL;
+	object_t * obj_ptr = NULL;
+	elem_t   * elem_ptr = NULL;
+
+	static hibuf_meta_t meta_object_t, 
+		meta_elem_t;
+
+	//define struct
+	elem_t array[2] = {{1, 0x00FF, 0x0000FFFF, 0x00000000FFFFFFFF, "123"}, {0xFF, 0xFFFF, 0xFFFFFFFF, 0xFFFFFFFFFFFFFFFF, "1234"}};
+	object_t object = {
+		.u8 = 1, 
+		.u16 = 2, 
+		.u32 = 3, 
+		.u64 = 4, 
+		.fl = 1.1234567,//5-6 number
+		.dou = 1234567890.1234567,//17 number
+		.z32 = -1,
+		.z64 = -2147483647,
+		.object = {
+			.s8 = 5,
+			.s16 = 6,
+			.s32 = 7,
+			.s64 = 8,
+		},
+		.array = {
+			.count = sizeof(array)/sizeof(array[0]),
+			.data  = array,
+		}
+	};
+
+	//setup hibuf meta
+	HIBUF_MAPPING(meta_elem_t, elem_t,
+		HIBUF_FIELD_S8(7, s8),
+		HIBUF_FIELD_S16(8, s16),
+		HIBUF_FIELD_S32(9, s32),
+		HIBUF_FIELD_S64(10, s64),
+		HIBUF_FIELD_STRING(11,str),
+	);
+	HIBUF_MAPPING(meta_object_t, object_t,
+		HIBUF_FIELD_U8(1, u8),
+		HIBUF_FIELD_U16(2, u16),
+		HIBUF_FIELD_U32(3, u32),
+		HIBUF_FIELD_U64(4, u64),
+		//HIBUF_FIELD_OBJECT(5, object, &meta_elem_t),
+		HIBUF_FIELD_ARRAY(6, array, &meta_elem_t),
+		HIBUF_FIELD_FLOAT(7, fl),
+		HIBUF_FIELD_DOUBLE(8, dou),
+		HIBUF_FIELD_Z32(9, z32),
+		HIBUF_FIELD_Z64(10, z64),
+	);	
+
+	//encode data
+	printf("##ENCODE DATA:");
+	size = hibuf_byte_encode(&meta_object_t, &object, &buffer);	
+	printf("\nhibuf_encode(meta %p, object %p, buffer %p)= size %d\n\n", 
+		&meta_object_t, &object, buffer,  size);
+
+	//printf hex formmat
+	printf("hex dump:\n");
+	hexdump(buffer, size);
+
+	//decode data
+	printf("\n##DECODE DATA:\n");
+	int ret = hibuf_decode(&meta_object_t, buffer, size, (void **)&obj_ptr);
+	if ( ret < 0 ) {
+		printf("hibuf_decode(meta %p, bytebuffer %p, size %d) = %d, object %p\n", 
+				&meta_object_t, buffer, size, ret, obj_ptr);	
+		goto LABEL_FREE;
+	}
+
+	//printf result after decode
+	printf("object attribute: u8 %02X, u16 %02X, u32 %02X, u64 %02X, "
+		"fl %f, double %lf, z32 %d, z64 %d\n", 
+		obj_ptr->u8, obj_ptr->u16, obj_ptr->u32, obj_ptr->u64, 
+		obj_ptr->fl, obj_ptr->dou, obj_ptr->z32, obj_ptr->z64);
+	printf("object array    : count %d\n", obj_ptr->array.count);
+	for ( n=0, elem_ptr = obj_ptr->array.data; 
+		n<obj_ptr->array.count; ++n, ++elem_ptr) {
+		//if overflow, auto convert [signed int]
+		printf("%3d, s8 %010X, s16 %010X, s32 %010X, s64 %018lX, str %s(%d)\n", 
+			n, elem_ptr->s8, elem_ptr->s16, elem_ptr->s32, elem_ptr->s64,
+			elem_ptr->str, strlen(elem_ptr->str));
+	}
+
+	//free object
+	hibuf_free(&meta_object_t, obj_ptr);
+	
+LABEL_FREE:
+	//free space
+	if ( buffer ) free(buffer);
+}
+
 int main()
 {
 	test_hibuf();
+	printf("\n\n=========with_buffer==============\n\n");
+	test_hibuf_with_buffer();
 	return 0;	
 }

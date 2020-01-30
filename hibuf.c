@@ -166,7 +166,7 @@ extern int    hibuf_byte_encode(const hibuf_meta_t * meta, void *object, char **
 
 	ret = hibuf_encode(meta, object, buffer, size);
 	//handler error or encode length zero
-	if ( 0 <= ret ) {
+	if ( ret <= 0 ) {
 		free(buffer);
 		buffer = NULL;
 		return ret;
