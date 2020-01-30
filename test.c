@@ -273,7 +273,7 @@ void test_hibuf()
 	
 LABEL_FREE:
 	//free space
-	if ( buffer ) free(buffer);
+	if ( buffer ) hibuf_byte_free(buffer);
 }
 
 int main()
