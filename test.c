@@ -279,7 +279,6 @@ LABEL_FREE:
 int main()
 {
 	test_hibuf();
-	printf("\n\n=========with_buffer==============\n\n");
-	test_hibuf_with_buffer();
+	//test_hibuf_with_buffer();
 	return 0;	
 }
