@@ -81,7 +81,11 @@ void hexdump(unsigned char * buffer, int size)
 
 
 //define struct
-static elem_t array[2] = {{1, 0x00FF, 0x0000FFFF, 0x00000000FFFFFFFF, "123"}, {0xFF, 0xFFFF, 0xFFFFFFFF, 0xFFFFFFFFFFFFFFFF, "1234"}};
+static elem_t array[3] = {
+				{0x01, 0x00FF, 0x0000FFFF, 0x00000000FFFFFFFF, "123"}, 
+				{0xFF, 0xFFFF, 0xFFFFFFFF, 0xFFFFFFFFFFFFFFFF, "1234"},
+				{0x02, 0x03, 0x04, 0x05, "0x06"},
+			};
 static object_t object = {
 		.u8 = 1, 
 		.u16 = 2, 
@@ -174,8 +178,11 @@ void test_hibuf_with_buffer()
 	for ( n=0, elem_ptr = obj_ptr->array.data; 
 		n<obj_ptr->array.count; ++n, ++elem_ptr) {
 		//if overflow, auto convert [signed int]
-		printf("%3d, s8 %010X, s16 %010X, s32 %010X, s64 %018lX, str %s(%d)\n", 
-			n, elem_ptr->s8, elem_ptr->s16, elem_ptr->s32, elem_ptr->s64,
+		printf("%3d, s8 %010X(%d), s16 %010X(%d), s32 %010X(%d), s64 %018lX(%d), str %s(%d)\n", 
+			n, elem_ptr->s8, elem_ptr->s8,
+			elem_ptr->s16, elem_ptr->s16, 
+			elem_ptr->s32, elem_ptr->s32,
+			elem_ptr->s64, elem_ptr->s64,
 			elem_ptr->str, strlen(elem_ptr->str));
 	}
 	
@@ -223,8 +230,11 @@ void test_hibuf()
 	for ( n=0, elem_ptr = obj_ptr->array.data; 
 		n<obj_ptr->array.count; ++n, ++elem_ptr) {
 		//if overflow, auto convert [signed int]
-		printf("%3d, s8 %010X, s16 %010X, s32 %010X, s64 %018lX, str %s(%d)\n", 
-			n, elem_ptr->s8, elem_ptr->s16, elem_ptr->s32, elem_ptr->s64,
+		printf("%3d, s8 %010X(%d), s16 %010X(%d), s32 %010X(%d), s64 %018lX(%ld), str %s(%d)\n", 
+			n, elem_ptr->s8, elem_ptr->s8,
+			elem_ptr->s16, elem_ptr->s16, 
+			elem_ptr->s32, elem_ptr->s32,
+			elem_ptr->s64, elem_ptr->s64,
 			elem_ptr->str, strlen(elem_ptr->str));
 	}
 
@@ -241,5 +251,5 @@ int main()
 	init();
 	test_hibuf();
 	//test_hibuf_with_buffer();
-	return 0;	
+	return 0;
 }
