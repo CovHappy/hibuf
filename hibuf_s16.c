@@ -42,10 +42,11 @@ static int  __HIBUF_OPT_S16_obj2bin(const hibuf_meta_t *meta, const hibuf_field_
                         void * object, char * buffer, size_t size)
 {
 	int16_t value = *(int16_t *)object;
+	uint16_t *target = (uint16_t *)buffer;
+
 	if (  size < HIBUF_TYPE_S16_SIZE ) return -ENOSPC;
 
-	buffer[0] = (unsigned char)(value >> 8);
-	buffer[1] = (unsigned char)value;
+	*target = HIBUF_HTON16(value);
 	return HIBUF_TYPE_S16_SIZE;
 }
 

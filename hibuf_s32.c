@@ -41,13 +41,12 @@ static int  __HIBUF_OPT_S32_copy(const hibuf_meta_t *meta, const hibuf_field_t *
 static int  __HIBUF_OPT_S32_obj2bin(const hibuf_meta_t *meta, const hibuf_field_t *prop,
                         void * object, char * buffer, size_t size)
 {
-	int32_t val = *(int32_t*)object;
+	int32_t value = *(int32_t*)object;
+	uint32_t *target = (uint32_t *)buffer;
+
 	if ( size < HIBUF_TYPE_S32_SIZE ) return -ENOSPC;
 
-	buffer[0] = (unsigned char)(val>>24);
-	buffer[1] = (unsigned char)(val>>16);
-	buffer[2] = (unsigned char)(val>>8);
-	buffer[3] = (unsigned char)val; 
+	*target = HIBUF_HTON32(value);	
 	return HIBUF_TYPE_S32_SIZE;
 }
 

@@ -41,18 +41,12 @@ static int  __HIBUF_OPT_S64_copy(const hibuf_meta_t *meta, const hibuf_field_t *
 static int  __HIBUF_OPT_S64_obj2bin(const hibuf_meta_t *meta, const hibuf_field_t *prop,
                         void * object, char * buffer, size_t size)
 {
-	int64_t val = *(int64_t*)object;
+	int64_t value = *(int64_t*)object;
+	uint64_t *target = (uint64_t *)buffer;
+
 	if ( size < HIBUF_TYPE_S64_SIZE ) return -ENOSPC;
 
-	buffer[0] = (unsigned char)(val>>56);
-	buffer[1] = (unsigned char)(val>>48);
-	buffer[2] = (unsigned char)(val>>40);
-	buffer[3] = (unsigned char)(val>>32); 
-	buffer[4] = (unsigned char)(val>>24); 
-	buffer[5] = (unsigned char)(val>>16); 
-	buffer[6] = (unsigned char)(val>>8); 
-	buffer[7] = (unsigned char)val; 
-
+	*target = HIBUF_HTON64(value);	
 	return HIBUF_TYPE_S64_SIZE;
 }
 
