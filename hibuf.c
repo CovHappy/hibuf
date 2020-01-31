@@ -21,51 +21,51 @@ void HIBUF_CHECK(const hibuf_meta_t *meta, const char *N, const char *F, const c
 		field->opt->check(meta, field, N, F, M, L);	
 	}
 }
-uint16_t HIBUF_HTON16(uint16_t net)
+uint16_t _HIBUF_BSWAP16(uint16_t x, uint8_t force)
 {
 	uint16_t value = 0;
 
-	if ( !HIBUF_BIG_ENDIAN ) {
-		value |= (net & 0xFF00UL) >> 8;
-		value |= (net & 0x00FFUL) << 8;
+	if ( force || !HIBUF_BIG_ENDIAN ) {
+		value |= (x & 0xFF00UL) >> 8;
+		value |= (x & 0x00FFUL) << 8;
 	} else {
-		value = net;
+		value = x;
 	}
 
 	return value;
 }
 
-uint32_t HIBUF_HTON32(uint32_t net)
+uint32_t _HIBUF_BSWAP32(uint32_t x, uint8_t force)
 {
 	uint64_t value = 0;
 
-	if ( !HIBUF_BIG_ENDIAN ) {
-		value |= (net & 0xFF000000UL) >> 24;
-		value |= (net & 0x00FF0000UL) >> 8;
-		value |= (net & 0x0000FF00UL) << 8;
-		value |= (net & 0x000000FFUL) << 24;
+	if ( force || !HIBUF_BIG_ENDIAN ) {
+		value |= (x & 0xFF000000UL) >> 24;
+		value |= (x & 0x00FF0000UL) >> 8;
+		value |= (x & 0x0000FF00UL) << 8;
+		value |= (x & 0x000000FFUL) << 24;
 	} else {
-		value = net;
+		value = x;
 	}
 
 	return value;
 }
 
-uint64_t HIBUF_HTON64(uint64_t net)
+uint64_t _HIBUF_BSWAP64(uint64_t x, uint8_t force)
 {
 	uint64_t value = 0;
 
-	if ( !HIBUF_BIG_ENDIAN ) {
-		value |= (net & 0xFF00000000000000UL) >> 56;
-		value |= (net & 0x00FF000000000000UL) >> 40;
-		value |= (net & 0x0000FF0000000000UL) >> 24;
-		value |= (net & 0x000000FF00000000UL) >> 8;
-		value |= (net & 0x00000000FF000000UL) << 8;
-		value |= (net & 0x0000000000FF0000UL) << 24;
-		value |= (net & 0x000000000000FF00UL) << 40;
-		value |= (net & 0x00000000000000FFUL) << 56;
+	if ( force || !HIBUF_BIG_ENDIAN ) {
+		value |= (x & 0xFF00000000000000UL) >> 56;
+		value |= (x & 0x00FF000000000000UL) >> 40;
+		value |= (x & 0x0000FF0000000000UL) >> 24;
+		value |= (x & 0x000000FF00000000UL) >> 8;
+		value |= (x & 0x00000000FF000000UL) << 8;
+		value |= (x & 0x0000000000FF0000UL) << 24;
+		value |= (x & 0x000000000000FF00UL) << 40;
+		value |= (x & 0x00000000000000FFUL) << 56;
 	} else {
-		value = net;
+		value = x;
 	}
 
 	return value;

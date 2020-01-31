@@ -213,12 +213,17 @@ extern const hibuf_opt_t HIBUF_OPT_OBJECT;
 	HIBUF_CHECK(&META, #META, __FILE__, __func__, __LINE__); \
 } while(0)
 
-extern uint16_t HIBUF_HTON16(uint16_t net);
-#define HIBUF_NTOH16(host) HIBUF_HTON16(host)
-extern uint32_t HIBUF_HTON32(uint32_t net);
-#define HIBUF_NTOH32(host) HIBUF_HTON32(host)
-extern uint64_t HIBUF_HTON64(uint64_t net);
-#define HIBUF_NTOH64(host) HIBUF_HTON64(host)
+extern uint16_t _HIBUF_BSWAP16(uint16_t x, uint8_t force);
+#define HIBUF_HTON16(host) _HIBUF_BSWAP16(host, 0)
+#define HIBUF_NTOH16(host) _HIBUF_BSWAP16(host, 0)
+
+extern uint32_t _HIBUF_BSWAP32(uint32_t x, uint8_t force);
+#define HIBUF_HTON32(host) _HIBUF_BSWAP32(host, 0)
+#define HIBUF_NTOH32(host) _HIBUF_BSWAP32(host, 0)
+
+extern uint64_t _HIBUF_BSWAP64(uint64_t x, uint8_t force);
+#define HIBUF_HTON64(host) _HIBUF_BSWAP64(host, 0)
+#define HIBUF_NTOH64(host) _HIBUF_BSWAP64(host, 0)
 
 extern int HIBUF_U64_TO_BYTES(uint64_t value,  unsigned char *bytes, int size);
 extern uint64_t  HIBUF_BYTES_TO_U64(int width, unsigned char *bytes, int size);
