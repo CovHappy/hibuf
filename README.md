@@ -59,6 +59,9 @@ Provide happy api for TLV in C
     HIBUF_FIELD_STRING  -> char[]
     HIBUF_FIELD_OBJECT  -> struct foo
     HIBUF_FIELD_ARRAY   -> struct foo[]
+    
+    HIBUF_FIELD_Z32     -> int32_t     //use zigzag way to convert to uint32_t
+    HIBUF_FIELD_Z64     -> int64_t     //use zigzag way to convert to uint64_t
         
 ```
 
