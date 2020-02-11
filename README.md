@@ -39,7 +39,7 @@ Provide happy api for TLV in C
     ...
 ```  
 
-**2. All Of Types
+**2. All Of Types**
 
 ```c
     HIBUF_FIELD_S8      -> int8_t
