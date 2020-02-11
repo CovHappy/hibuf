@@ -35,17 +35,41 @@ Provide happy api for TLV in C
             HIBUF_FIELD_STRING(11,str),
     );
     
+    see more test.c
     ...
-```   
+```  
 
-**2. Create & Destroy TLV Buffer**
+**2. All Of Types
+
+```c
+    HIBUF_FIELD_S8      -> int8_t
+    HIBUF_FIELD_S16     -> int16_t
+    HIBUF_FIELD_S32     -> int32_t
+    HIBUF_FIELD_S64     -> int64_t
+   
+    HIBUF_FIELD_U8      -> uint8_t
+    HIBUF_FIELD_U16     -> uint16_t
+    HIBUF_FIELD_U32     -> uint32_t
+    HIBUF_FIELD_U64     -> uint64_t
+    
+    HIBUF_FIELD_FLOAT   -> float
+    HIBUF_FIELD_DOUBLE  -> double
+    HIBUF_FIELD_TIME    -> time_t
+    
+    HIBUF_FIELD_STRING  -> char[]
+    HIBUF_FIELD_OBJECT  -> struct foo
+    HIBUF_FIELD_ARRAY   -> struct foo[]
+        
+```
+
+**3. Create & Destroy TLV Buffer**
 
 ```c
     extern int    hibuf_byte_encode(const hibuf_meta_t * meta, void *object, char **bytes);
     extern void   hibuf_byte_free(char *bytes);
  ```  
  
-**3. Convert to Object From TLV Buffer And Destroy Object**
+**4. Convert to Object From TLV Buffer And Destroy Object**
 
 ```c
     extern int    hibuf_decode(const hibuf_meta_t * meta, char *bytes, size_t size, void **object);
@@ -53,7 +77,7 @@ Provide happy api for TLV in C
 ```  
 
 
-# compressible format
+# encode format
 
 ```
 TLV = {TYPE=2byte, LENGTH=2byte, VALUE=data}
